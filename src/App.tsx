@@ -18,7 +18,6 @@ const useSessionGuard = () => {
           setCurrentUser(user);
           setIsAuthenticated(true);
         } catch (error) {
-          // Invalid JSON in localStorage, clear it
           localStorage.removeItem('currentUser');
           setIsAuthenticated(false);
         }
@@ -28,8 +27,6 @@ const useSessionGuard = () => {
     };
 
     checkAuth();
-
-    // Listen for storage changes (e.g., logout in another tab)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'currentUser') {
         checkAuth();
@@ -59,7 +56,6 @@ function App() {
   const [showIntro, setShowIntro] = useState(true);
   const { isAuthenticated, currentUser, login, logout } = useSessionGuard();
 
-  // Show loading while checking authentication
   if (isAuthenticated === null) {
     return (
       <div className="fixed inset-0 bg-black flex items-center justify-center">
@@ -68,29 +64,34 @@ function App() {
     );
   }
 
-  // If user is authenticated, skip intro and show dashboard
   if (isAuthenticated && currentUser) {
     return <Dashboard currentUser={currentUser} onLogout={logout} />;
   }
 
-  // If not authenticated, show intro then login
   if (showIntro) {
     return <IntroScreen onComplete={() => setShowIntro(false)} />;
   }
 
-  // Show login page
-  return (
-    <Login onLoginSuccess={login} />
-  );
+  return <Login onLoginSuccess={login} />;
 }
 
-// Dashboard component extracted for better organization
 interface DashboardProps {
   currentUser: { name: string; code: string };
   onLogout: () => void;
 }
 
 function Dashboard({ currentUser, onLogout }: DashboardProps) {
+  const links: Record<string, string> = {
+    "SCHOLAR": "https://scholarycheck.netlify.app",
+    "PLANNER": "https://peakeventplanner.netlify.app",
+    "TRANSCRIBER": "https://peaktranscriber.netlify.app",
+    "CLIENT TRACKER": "https://peakclienttracker.netlify.app",
+    "BLOG CREATOR": "https://peakblogcreator.netlify.app",
+    "GAIT AI": "https://app.ochy.io/",
+    "NUTRITION PLANNER": "https://peaknutrition.netlify.app/",
+    "REHAB PRESCRIPTION": "https://peakrehabplanner.netlify.app"
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -111,7 +112,6 @@ function Dashboard({ currentUser, onLogout }: DashboardProps) {
           </motion.h1>
         </div>
         
-        {/* Logout Button */}
         <motion.button
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -128,63 +128,15 @@ function Dashboard({ currentUser, onLogout }: DashboardProps) {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
             {[
-              {
-                icon: BookOpen,
-                title: "SCHOLAR",
-                description: "Clinical knowledge & learning",
-                emoji: "📚",
-                type: "active"
-              },
-              {
-                icon: Calendar,
-                title: "PLANNER",
-                description: "Organize your schedules",
-                emoji: "🗓️",
-                type: "active"
-              },
-              {
-                icon: Mic,
-                title: "TRANSCRIBER",
-                description: "Convert voice to reports",
-                emoji: "🎤",
-                type: "active"
-              },
-              {
-                title: "CLIENT TRACKER",
-                description: "Track and manage client progress",
-                emoji: "👥",
-                type: "active"
-              },
-              {
-                title: "BLOG CREATOR",
-                description: "Generate content for our brand",
-                emoji: "✍️",
-                type: "active"
-              },
-              {
-                title: "GAIT AI",
-                description: "Analyze gait with AI technology",
-                emoji: "🚶",
-                type: "active"
-              },
-              {
-                title: "NUTRITION PLANNER",
-                description: "Personalized meal and diet planning",
-                emoji: "🥗",
-                type: "active"
-              },
-              {
-                title: "REHAB PRESCRIPTION",
-                description: "Create and assign rehab programs",
-                emoji: "🏥",
-                type: "active"
-              },
-              {
-                title: "COMING SOON",
-                description: "New tools on the way",
-                emoji: "🚀",
-                type: "coming-soon"
-              }
+              { title: "SCHOLAR", description: "Clinical knowledge & learning", emoji: "📚", type: "active" },
+              { title: "PLANNER", description: "Organize your schedules", emoji: "🗓️", type: "active" },
+              { title: "TRANSCRIBER", description: "Convert voice to reports", emoji: "🎤", type: "active" },
+              { title: "CLIENT TRACKER", description: "Track and manage client progress", emoji: "👥", type: "active" },
+              { title: "BLOG CREATOR", description: "Generate content for our brand", emoji: "✍️", type: "active" },
+              { title: "GAIT AI", description: "Analyze gait with AI technology", emoji: "🚶", type: "active" },
+              { title: "NUTRITION PLANNER", description: "Personalized meal and diet planning", emoji: "🥗", type: "active" },
+              { title: "REHAB PRESCRIPTION", description: "Create and assign rehab programs", emoji: "🏥", type: "active" },
+              { title: "COMING SOON", description: "New tools on the way", emoji: "🚀", type: "coming-soon" }
             ].map((feature, index) => (
               <motion.div
                 key={`${feature.title}-${index}`}
@@ -208,20 +160,18 @@ function Dashboard({ currentUser, onLogout }: DashboardProps) {
                   {feature.description}
                 </p>
                 {feature.type === "coming-soon" ? (
-                  <div className="text-center">
-                    <div className="text-gray-400 px-8 py-3 rounded-lg font-bold tracking-wide">
-                      COMING SOON
-                    </div>
+                  <div className="text-center text-gray-400 px-8 py-3 rounded-lg font-bold tracking-wide">
+                    COMING SOON
                   </div>
                 ) : (
                   <div className="text-center">
                     <motion.button
-                      whileHover={{ 
-                        scale: 1.05,
-                        backgroundColor: "#1E40AF"
-                      }}
+                      whileHover={{ scale: 1.05, backgroundColor: "#1E40AF" }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => console.log(`Launch ${feature.title} clicked`)}
+                      onClick={() => {
+                        const url = links[feature.title];
+                        if (url) window.open(url, "_blank");
+                      }}
                       className="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold tracking-wide hover:bg-blue-700 transition-all duration-200 shadow-md"
                     >
                       LAUNCH {feature.title}
