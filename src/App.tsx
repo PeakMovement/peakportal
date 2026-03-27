@@ -1,85 +1,6 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
-import IntroScreen from './components/IntroScreen';
-import Login from './pages/Login';
-
-// Session guard hook
-const useSessionGuard = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [currentUser, setCurrentUser] = useState<{ name: string; code: string } | null>(null);
-
-  useEffect(() => {
-    const checkAuth = () => {
-      const storedUser = localStorage.getItem('currentUser');
-      if (storedUser) {
-        try {
-          const user = JSON.parse(storedUser);
-          setCurrentUser(user);
-          setIsAuthenticated(true);
-        } catch (error) {
-          localStorage.removeItem('currentUser');
-          setIsAuthenticated(false);
-        }
-      } else {
-        setIsAuthenticated(false);
-      }
-    };
-
-    checkAuth();
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'currentUser') {
-        checkAuth();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  const login = (user: { name: string; code: string }) => {
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    setCurrentUser(user);
-    setIsAuthenticated(true);
-  };
-
-  const logout = () => {
-    localStorage.removeItem('currentUser');
-    setCurrentUser(null);
-    setIsAuthenticated(false);
-  };
-
-  return { isAuthenticated, currentUser, login, logout };
-};
 
 function App() {
-  const [showIntro, setShowIntro] = useState(true);
-  const { isAuthenticated, currentUser, login, logout } = useSessionGuard();
-
-  if (isAuthenticated === null) {
-    return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    );
-  }
-
-  if (isAuthenticated && currentUser) {
-    return <Dashboard currentUser={currentUser} onLogout={logout} />;
-  }
-
-  if (showIntro) {
-    return <IntroScreen onComplete={() => setShowIntro(false)} />;
-  }
-
-  return <Login onLoginSuccess={login} />;
-}
-
-interface DashboardProps {
-  currentUser: { name: string; code: string };
-  onLogout: () => void;
-}
-
-function Dashboard({ currentUser, onLogout }: DashboardProps) {
   const portals = [
     {
       title: "BUDDY",
@@ -111,9 +32,9 @@ function Dashboard({ currentUser, onLogout }: DashboardProps) {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 py-10 px-6 flex justify-between items-center"
+        className="relative z-10 py-10 px-6"
       >
-        <div className="flex-1 text-center">
+        <div className="text-center">
           <motion.h1
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -122,25 +43,7 @@ function Dashboard({ currentUser, onLogout }: DashboardProps) {
           >
             PEAK PORTAL
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="text-gray-500 mt-3 text-lg tracking-wide"
-          >
-            Welcome, {currentUser.name}
-          </motion.p>
         </div>
-
-        <motion.button
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          onClick={onLogout}
-          className="absolute top-10 right-6 bg-red-600 text-white px-6 py-2 rounded-lg font-bold text-sm tracking-wide hover:bg-red-700 transition-colors duration-200"
-        >
-          LOGOUT
-        </motion.button>
       </motion.header>
 
       {/* Portal Cards */}
