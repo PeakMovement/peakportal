@@ -6,21 +6,21 @@ function App() {
       title: "BUDDY",
       description: "Your AI companion for movement & wellness",
       emoji: "🤝",
-      url: "#", // TODO: Connect your URL here
+      url: "https://buddyt.up.railway.app",
       color: "from-blue-500 to-blue-700",
     },
     {
       title: "HIPPOCRATES",
       description: "Clinical knowledge & evidence-based insights",
       emoji: "🏛️",
-      url: "#", // TODO: Connect your URL here
+      url: "https://rehabfinder.up.railway.app",
       color: "from-emerald-500 to-emerald-700",
     },
     {
       title: "TRACKER",
       description: "Track and manage client progress",
       emoji: "📊",
-      url: "#", // TODO: Connect your URL here
+      url: "https://clienttracker-production.up.railway.app",
       color: "from-purple-500 to-purple-700",
     },
   ];
