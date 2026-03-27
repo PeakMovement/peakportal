@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { BookOpen, Calendar, Mic } from 'lucide-react';
 import IntroScreen from './components/IntroScreen';
 import Login from './pages/Login';
 
@@ -81,104 +80,107 @@ interface DashboardProps {
 }
 
 function Dashboard({ currentUser, onLogout }: DashboardProps) {
-  const links: Record<string, string> = {
-    "SCHOLAR": "https://scholarycheck.netlify.app",
-    "PLANNER": "https://peakeventplanner.netlify.app",
-    "TRANSCRIBER": "https://peaktranscriber.netlify.app",
-    "CLIENT TRACKER": "https://peakclienttracker.netlify.app",
-    "BLOG CREATOR": "https://peakblogcreator.netlify.app",
-    "GAIT AI": "https://app.ochy.io/",
-    "NUTRITION PLANNER": "https://peaknutrition.netlify.app/",
-    "REHAB PRESCRIPTION": "https://peakrehabplanner.netlify.app"
-  };
+  const portals = [
+    {
+      title: "BUDDY",
+      description: "Your AI companion for movement & wellness",
+      emoji: "🤝",
+      url: "#", // TODO: Connect your URL here
+      color: "from-blue-500 to-blue-700",
+    },
+    {
+      title: "HIPPOCRATES",
+      description: "Clinical knowledge & evidence-based insights",
+      emoji: "🏛️",
+      url: "#", // TODO: Connect your URL here
+      color: "from-emerald-500 to-emerald-700",
+    },
+    {
+      title: "TRACKER",
+      description: "Track and manage client progress",
+      emoji: "📊",
+      url: "#", // TODO: Connect your URL here
+      color: "from-purple-500 to-purple-700",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <motion.header 
+      <motion.header
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 py-12 px-6 flex justify-between items-center"
+        className="relative z-10 py-10 px-6 flex justify-between items-center"
       >
         <div className="flex-1 text-center">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
             className="text-4xl md:text-5xl lg:text-6xl font-bold text-black tracking-tight"
           >
-            WELCOME, {currentUser.name.toUpperCase()}
+            PEAK PORTAL
           </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.4 }}
+            className="text-gray-500 mt-3 text-lg tracking-wide"
+          >
+            Welcome, {currentUser.name}
+          </motion.p>
         </div>
-        
+
         <motion.button
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
           onClick={onLogout}
-          className="bg-red-600 text-white px-6 py-2 rounded-lg font-bold text-sm tracking-wide hover:bg-red-700 transition-colors duration-200"
+          className="absolute top-10 right-6 bg-red-600 text-white px-6 py-2 rounded-lg font-bold text-sm tracking-wide hover:bg-red-700 transition-colors duration-200"
         >
           LOGOUT
         </motion.button>
       </motion.header>
 
-      {/* Features Section */}
-      <main className="relative z-10 px-6 py-16">
-        <div className="max-w-6xl mx-auto">
+      {/* Portal Cards */}
+      <main className="flex-1 flex items-center justify-center px-6 pb-20">
+        <div className="max-w-5xl w-full">
           <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
-            {[
-              { title: "SCHOLAR", description: "Clinical knowledge & learning", emoji: "📚", type: "active" },
-              { title: "PLANNER", description: "Organize your schedules", emoji: "🗓️", type: "active" },
-              { title: "TRANSCRIBER", description: "Convert voice to reports", emoji: "🎤", type: "active" },
-              { title: "CLIENT TRACKER", description: "Track and manage client progress", emoji: "👥", type: "active" },
-              { title: "BLOG CREATOR", description: "Generate content for our brand", emoji: "✍️", type: "active" },
-              { title: "GAIT AI", description: "Analyze gait with AI technology", emoji: "🚶", type: "active" },
-              { title: "NUTRITION PLANNER", description: "Personalized meal and diet planning", emoji: "🥗", type: "active" },
-              { title: "REHAB PRESCRIPTION", description: "Create and assign rehab programs", emoji: "🏥", type: "active" },
-              { title: "COMING SOON", description: "New tools on the way", emoji: "🚀", type: "coming-soon" }
-            ].map((feature, index) => (
-              <motion.div
-                key={`${feature.title}-${index}`}
+            {portals.map((portal, index) => (
+              <motion.a
+                key={portal.title}
+                href={portal.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.2 }}
-                whileHover={{ 
-                  y: -8, 
-                  scale: 1.02,
-                  boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)"
+                whileHover={{
+                  y: -12,
+                  scale: 1.03,
+                  boxShadow: "0 25px 50px rgba(0, 0, 0, 0.15)",
                 }}
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100"
+                whileTap={{ scale: 0.97 }}
+                className="block bg-white rounded-2xl p-10 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 cursor-pointer group"
               >
                 <div className="flex items-center justify-center mb-6">
-                  <span className="text-4xl mb-2">{feature.emoji}</span>
+                  <span className="text-5xl">{portal.emoji}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-black mb-4 tracking-wide text-center">
-                  {feature.title}
+                <h3 className="text-2xl font-bold text-black mb-3 tracking-wide text-center">
+                  {portal.title}
                 </h3>
-                <p className="text-gray-600 font-medium leading-relaxed text-center mb-8">
-                  {feature.description}
+                <p className="text-gray-500 font-medium leading-relaxed text-center mb-8">
+                  {portal.description}
                 </p>
-                {feature.type === "coming-soon" ? (
-                  <div className="text-center text-gray-400 px-8 py-3 rounded-lg font-bold tracking-wide">
-                    COMING SOON
-                  </div>
-                ) : (
-                  <div className="text-center">
-                    <motion.button
-                      whileHover={{ scale: 1.05, backgroundColor: "#1E40AF" }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        const url = links[feature.title];
-                        if (url) window.open(url, "_blank");
-                      }}
-                      className="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold tracking-wide hover:bg-blue-700 transition-all duration-200 shadow-md"
-                    >
-                      LAUNCH {feature.title}
-                    </motion.button>
-                  </div>
-                )}
-              </motion.div>
+                <div className="text-center">
+                  <span
+                    className={`inline-block bg-gradient-to-r ${portal.color} text-white px-8 py-3 rounded-lg font-bold tracking-wide shadow-md group-hover:shadow-lg transition-shadow duration-200`}
+                  >
+                    LAUNCH
+                  </span>
+                </div>
+              </motion.a>
             ))}
           </div>
         </div>
